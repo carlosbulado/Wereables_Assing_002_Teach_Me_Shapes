@@ -18,6 +18,7 @@ class ViewController: UIViewController
     @IBOutlet weak var shapesNumberLabel: UILabel!
     @IBOutlet weak var newShapeBtn: UIButton!
     @IBOutlet weak var switchGameOpt: UISwitch!
+    @IBOutlet weak var imgShape: UIImageView!
     
     override func viewDidLoad()
     {
@@ -146,11 +147,21 @@ class ViewController: UIViewController
     
     func generateShape()
     {
-        self.randomShape = Int.random(in: 1 ... 4)
+        self.randomShape = Int.random(in: 3 ... 4)
         if !self.switchGameOpt.isOn
         {
-            self.shapeLabel.text = "Number of shapes: \(self.randomShape)"
+//            self.shapeLabel.text = "Number of shapes: \(self.randomShape)"
+            self.shapeLabel.text = ""
             self.shapesNumberLabel.text = "How many sides does this shape have? .... Waiting for particle"
+            self.imgShape.isHidden = false
+            switch(self.randomShape)
+            {
+                case 4:
+                    self.imgShape.image = UIImage.init(named: "square")
+                default:
+                    self.imgShape.image = UIImage.init(named: "triangle")
+            }
+            
             self.callParticleFunc(functionName: "howManyShapes", arg: ["\(self.randomShape)"])
             self.newShapeBtn.isHidden = true
         }
@@ -158,6 +169,7 @@ class ViewController: UIViewController
         {
             self.randomShape = Int.random(in: 1 ... 3)
             self.shapeLabel.text = "Draw the shape \(self.randomShape)"
+            self.imgShape.isHidden = true
             self.shapesNumberLabel.text = ""
             self.callParticleFunc(functionName: "shapeNumber", arg: ["\(self.randomShape)"])
             self.newShapeBtn.isHidden = true
@@ -172,6 +184,7 @@ class ViewController: UIViewController
                 self.shapesNumberLabel.text = "CORRECT!"
                 self.callParticleFunc(functionName: "color", arg: ["green"])
                 self.newShapeBtn.isHidden = false
+                self.imgShape.isHidden = true
             }
         }
     }
@@ -184,6 +197,7 @@ class ViewController: UIViewController
                 self.shapesNumberLabel.text = "INCORRECT!"
                 self.callParticleFunc(functionName: "color", arg: ["red"])
                 self.newShapeBtn.isHidden = false
+                self.imgShape.isHidden = true
             }
         }
     }
