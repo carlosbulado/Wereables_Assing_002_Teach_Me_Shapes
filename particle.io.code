@@ -4,12 +4,16 @@
 InternetButton b = InternetButton();
 int numberOfSidesOfShape = 0;
 int DELAY = 200;
+int colorDelay = 1000;
+int quantTries = 0;
+int quantCorrect = 0;
 
 void setup()
 {
     b.begin();
     
     Particle.function("howManyShapes", howManyShapes);
+    Particle.function("color", color);
 }
 
 void loop()
@@ -45,8 +49,22 @@ int howManyShapes(String cmd)
     if(cmd == "2") numberOfSidesOfShape = 2;
     if(cmd == "3") numberOfSidesOfShape = 3;
     if(cmd == "4") numberOfSidesOfShape = 4;
-    b.rainbow(10);
-    delay(1000);
+    return 1;
+}
+
+int color(String cmd)
+{
+    quantTries = quantTries + 1;
+    if(cmd == "green") { b.allLedsOn(0, 255, 0); quantCorrect = quantCorrect + 1; }
+    if(cmd == "red") { b.allLedsOn(255, 0, 0); }
+    delay(colorDelay);
     b.allLedsOff();
+    
+    char squantCorrect[5];
+    itoa(quantCorrect, squantCorrect, 10);
+    Particle.publish("totalCorrect", squantCorrect, 60, PRIVATE);
+    char squantTries[5];
+    itoa(quantTries, squantTries, 10);
+    Particle.publish("totalTries", squantTries, 60, PRIVATE);
     return 1;
 }

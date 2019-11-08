@@ -7,12 +7,16 @@ class ViewController: UIViewController
     let USERNAME = ""
     let PASSWORD = ""
     var randomShape = 0
+    var totalCorrect = 0
+    var totalTries = 0
     // MARK: Device
     let DEVICE_ID = ""
     var myPhoton : ParticleDevice?
     //MARK: IBOutlets
     @IBOutlet weak var shapeLabel: UILabel!
+    @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var shapesNumberLabel: UILabel!
+    @IBOutlet weak var newShapeBtn: UIButton!
     
     override func viewDidLoad()
     {
@@ -77,9 +81,9 @@ class ViewController: UIViewController
     //MARK: Subscribe to "playerChoice" events on Particle
     func subscribeToParticleEvents()
     {
-        var handler : Any?
-        handler = ParticleCloud.sharedInstance().subscribeToDeviceEvents(
-            withPrefix: "sideShape",
+        ParticleCloud.sharedInstance().subscribeToDeviceEvents(
+            //withPrefix: "sideShape",
+            withPrefix: nil,
             deviceID:self.DEVICE_ID,
             handler: {
                 (event :ParticleEvent?, error : Error?) in
@@ -87,15 +91,25 @@ class ViewController: UIViewController
             if let _ = error {
                 print("could not subscribe to events")
             } else {
-                print("got event with data \(event?.data)")
+                print("got event with data \(event)")
                 let choice = (event?.data)!
-                if (self.randomShape == Int(choice))
+                switch(event?.event)
                 {
-                    self.correctAnswer()
-                }
-                else
-                {
-                    self.incorrectAnswer()
+                    case "totalCorrect":
+                        self.totalCorrect = Int(choice)!
+                        self.setScore()
+                    case "totalTries":
+                        self.totalTries = Int(choice)!
+                        self.setScore()
+                    default:
+                        if (self.randomShape == Int(choice))
+                        {
+                            self.correctAnswer()
+                        }
+                        else
+                        {
+                            self.incorrectAnswer()
+                        }
                 }
             }
         })
@@ -122,8 +136,9 @@ class ViewController: UIViewController
     {
         randomShape = Int.random(in: 1 ... 4)
         self.shapeLabel.text = "Number of shapes: \(randomShape)"
-        self.shapesNumberLabel.text = "How many sides does this shape have?"
+        self.shapesNumberLabel.text = "How many sides does this shape have? .... Waiting for particle"
         self.callParticleFunc(functionName: "howManyShapes", arg: ["\(randomShape)"])
+        self.newShapeBtn.isHidden = true
     }
     
     func correctAnswer()
@@ -132,6 +147,8 @@ class ViewController: UIViewController
             DispatchQueue.main.async {
                 // now update UI on main thread
                 self.shapesNumberLabel.text = "CORRECT!"
+                self.callParticleFunc(functionName: "color", arg: ["green"])
+                self.newShapeBtn.isHidden = false
             }
         }
     }
@@ -142,6 +159,18 @@ class ViewController: UIViewController
             DispatchQueue.main.async {
                 // now update UI on main thread
                 self.shapesNumberLabel.text = "INCORRECT!"
+                self.callParticleFunc(functionName: "color", arg: ["red"])
+                self.newShapeBtn.isHidden = false
+            }
+        }
+    }
+    
+    func setScore()
+    {
+        DispatchQueue.global(qos: .utility).async {
+            DispatchQueue.main.async {
+                // now update UI on main thread
+                self.scoreLabel.text = " Score: \(self.totalCorrect) / \(self.totalTries)"
             }
         }
     }
