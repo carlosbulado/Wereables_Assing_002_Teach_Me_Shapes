@@ -3,6 +3,7 @@
 
 InternetButton b = InternetButton();
 int numberOfSidesOfShape = 0;
+int DELAY = 200;
 
 void setup()
 {
@@ -13,7 +14,29 @@ void setup()
 
 void loop()
 {
+    if (b.buttonOn(1)) 
+    {
+        Particle.publish("sideShape", "1", 60, PRIVATE);
+        delay(DELAY);
+    }
     
+    if (b.buttonOn(2)) 
+    {
+        Particle.publish("sideShape", "2", 60, PRIVATE);
+        delay(DELAY);
+    }
+    
+    if (b.buttonOn(3)) 
+    {
+        Particle.publish("sideShape", "3", 60, PRIVATE);
+        delay(DELAY);
+    }
+    
+    if (b.buttonOn(4)) 
+    {
+        Particle.publish("sideShape", "4", 60, PRIVATE);
+        delay(DELAY);
+    }
 }
 
 int howManyShapes(String cmd)

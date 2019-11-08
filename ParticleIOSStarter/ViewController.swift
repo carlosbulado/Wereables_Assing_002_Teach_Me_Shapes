@@ -4,10 +4,11 @@ import Particle_SDK
 class ViewController: UIViewController
 {
     // MARK: User variables
-    let USERNAME = "carlosbulado@gmail.com"
-    let PASSWORD = "C4rl0sParticle"
+    let USERNAME = ""
+    let PASSWORD = ""
+    var randomShape = 0
     // MARK: Device
-    let DEVICE_ID = "220038000447363333343435"
+    let DEVICE_ID = ""
     var myPhoton : ParticleDevice?
     //MARK: IBOutlets
     @IBOutlet weak var shapeLabel: UILabel!
@@ -78,13 +79,25 @@ class ViewController: UIViewController
     {
         var handler : Any?
         handler = ParticleCloud.sharedInstance().subscribeToDeviceEvents(
-            withPrefix: "playerChoice",
+            withPrefix: "sideShape",
             deviceID:self.DEVICE_ID,
             handler: {
                 (event :ParticleEvent?, error : Error?) in
-
-            if let _ = error { print("could not subscribe to events") }
-            else { print("got event with data \(event?.data)") }
+            
+            if let _ = error {
+                print("could not subscribe to events")
+            } else {
+                print("got event with data \(event?.data)")
+                let choice = (event?.data)!
+                if (self.randomShape == Int(choice))
+                {
+                    self.correctAnswer()
+                }
+                else
+                {
+                    self.incorrectAnswer()
+                }
+            }
         })
 
         self.generateShape()
@@ -107,9 +120,29 @@ class ViewController: UIViewController
     
     func generateShape()
     {
-        let randomShape = Int.random(in: 1 ... 4)
+        randomShape = Int.random(in: 1 ... 4)
         self.shapeLabel.text = "Number of shapes: \(randomShape)"
         self.shapesNumberLabel.text = "How many sides does this shape have?"
         self.callParticleFunc(functionName: "howManyShapes", arg: ["\(randomShape)"])
+    }
+    
+    func correctAnswer()
+    {
+        DispatchQueue.global(qos: .utility).async {
+            DispatchQueue.main.async {
+                // now update UI on main thread
+                self.shapesNumberLabel.text = "CORRECT!"
+            }
+        }
+    }
+    
+    func incorrectAnswer()
+    {
+        DispatchQueue.global(qos: .utility).async {
+            DispatchQueue.main.async {
+                // now update UI on main thread
+                self.shapesNumberLabel.text = "INCORRECT!"
+            }
+        }
     }
 }
