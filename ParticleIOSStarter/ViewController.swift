@@ -4,19 +4,20 @@ import Particle_SDK
 class ViewController: UIViewController
 {
     // MARK: User variables
-    let USERNAME = ""
-    let PASSWORD = ""
+    let USERNAME = "carlosbulado@gmail.com"
+    let PASSWORD = "C4rl0sParticle"
     var randomShape = 0
     var totalCorrect = 0
     var totalTries = 0
     // MARK: Device
-    let DEVICE_ID = ""
+    let DEVICE_ID = "220038000447363333343435"
     var myPhoton : ParticleDevice?
     //MARK: IBOutlets
     @IBOutlet weak var shapeLabel: UILabel!
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var shapesNumberLabel: UILabel!
     @IBOutlet weak var newShapeBtn: UIButton!
+    @IBOutlet weak var switchGameOpt: UISwitch!
     
     override func viewDidLoad()
     {
@@ -123,6 +124,17 @@ class ViewController: UIViewController
         self.generateShape()
     }
     
+    @IBAction func changeGame(_ sender: Any)
+    {
+        self.generateShape()
+    }
+    
+    @IBAction func decideGame(_ sender: Any)
+    {
+        let r = Int.random(in: 1 ... 11)
+        self.switchGameOpt.isOn = r % 2 == 0
+        self.generateShape()
+    }
     
     //MARK: Class custom functions
     func callParticleFunc(functionName: String, arg: [String])
@@ -134,11 +146,22 @@ class ViewController: UIViewController
     
     func generateShape()
     {
-        randomShape = Int.random(in: 1 ... 4)
-        self.shapeLabel.text = "Number of shapes: \(randomShape)"
-        self.shapesNumberLabel.text = "How many sides does this shape have? .... Waiting for particle"
-        self.callParticleFunc(functionName: "howManyShapes", arg: ["\(randomShape)"])
-        self.newShapeBtn.isHidden = true
+        self.randomShape = Int.random(in: 1 ... 4)
+        if !self.switchGameOpt.isOn
+        {
+            self.shapeLabel.text = "Number of shapes: \(self.randomShape)"
+            self.shapesNumberLabel.text = "How many sides does this shape have? .... Waiting for particle"
+            self.callParticleFunc(functionName: "howManyShapes", arg: ["\(self.randomShape)"])
+            self.newShapeBtn.isHidden = true
+        }
+        else
+        {
+            self.randomShape = Int.random(in: 1 ... 3)
+            self.shapeLabel.text = "Draw the shape \(self.randomShape)"
+            self.shapesNumberLabel.text = ""
+            self.callParticleFunc(functionName: "shapeNumber", arg: ["\(self.randomShape)"])
+            self.newShapeBtn.isHidden = true
+        }
     }
     
     func correctAnswer()

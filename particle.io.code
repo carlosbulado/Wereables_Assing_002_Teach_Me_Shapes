@@ -14,6 +14,7 @@ void setup()
     
     Particle.function("howManyShapes", howManyShapes);
     Particle.function("color", color);
+    Particle.function("shapeNumber", shapeNumber);
 }
 
 void loop()
@@ -43,12 +44,56 @@ void loop()
     }
 }
 
+void squareShape()
+{
+    //1
+    b.ledOn(1, 255, 255, 0);
+    //4
+    b.ledOn(4, 255, 255, 0);
+    //7
+    b.ledOn(7, 255, 255, 0);
+    //10
+    b.ledOn(10, 255, 255, 0);
+}
+
+void triangleShape()
+{
+    //2
+    b.ledOn(2, 255, 255, 0);
+    //6
+    b.ledOn(6, 255, 255, 0);
+    //9
+    b.ledOn(9, 255, 255, 0);
+}
+
+void circleShape()
+{
+    b.allLedsOn(255, 255, 0);
+}
+
+void clear()
+{
+    b.allLedsOff();
+}
+
+void showScores()
+{
+    char squantCorrect[5];
+    itoa(quantCorrect, squantCorrect, 10);
+    Particle.publish("totalCorrect", squantCorrect, 60, PRIVATE);
+    char squantTries[5];
+    itoa(quantTries, squantTries, 10);
+    Particle.publish("totalTries", squantTries, 60, PRIVATE);
+}
+
 int howManyShapes(String cmd)
 {
-    if(cmd == "1") numberOfSidesOfShape = 1;
-    if(cmd == "2") numberOfSidesOfShape = 2;
-    if(cmd == "3") numberOfSidesOfShape = 3;
-    if(cmd == "4") numberOfSidesOfShape = 4;
+    clear();
+    if(cmd == "1") { numberOfSidesOfShape = 1; }
+    if(cmd == "2") { numberOfSidesOfShape = 2; }
+    if(cmd == "3") { numberOfSidesOfShape = 3; }
+    if(cmd == "4") { numberOfSidesOfShape = 4; }
+    showScores();
     return 1;
 }
 
@@ -59,12 +104,17 @@ int color(String cmd)
     if(cmd == "red") { b.allLedsOn(255, 0, 0); }
     delay(colorDelay);
     b.allLedsOff();
-    
-    char squantCorrect[5];
-    itoa(quantCorrect, squantCorrect, 10);
-    Particle.publish("totalCorrect", squantCorrect, 60, PRIVATE);
-    char squantTries[5];
-    itoa(quantTries, squantTries, 10);
-    Particle.publish("totalTries", squantTries, 60, PRIVATE);
+    showScores();
+    return 1;
+}
+
+int shapeNumber(String cmd)
+{
+    clear();
+    if(cmd == "1") { squareShape(); }
+    if(cmd == "2") { triangleShape(); }
+    if(cmd == "3") { circleShape(); }
+    if(cmd == "4") { clear(); }
+    showScores();
     return 1;
 }
