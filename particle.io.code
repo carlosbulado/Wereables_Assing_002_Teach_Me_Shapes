@@ -1,0 +1,29 @@
+// This #include statement was automatically added by the Particle IDE.
+#include <InternetButton.h>
+
+InternetButton b = InternetButton();
+int numberOfSidesOfShape = 0;
+
+void setup()
+{
+    b.begin();
+    
+    Particle.function("howManyShapes", howManyShapes);
+}
+
+void loop()
+{
+    
+}
+
+int howManyShapes(String cmd)
+{
+    if(cmd == "1") numberOfSidesOfShape = 1;
+    if(cmd == "2") numberOfSidesOfShape = 2;
+    if(cmd == "3") numberOfSidesOfShape = 3;
+    if(cmd == "4") numberOfSidesOfShape = 4;
+    b.rainbow(10);
+    delay(1000);
+    b.allLedsOff();
+    return 1;
+}

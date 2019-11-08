@@ -1,0 +1,6 @@
+framework module Pods_ParticleIOSStarter {
+  umbrella header "Pods-ParticleIOSStarter-umbrella.h"
+
+  export *
+  module * { export * }
+}
